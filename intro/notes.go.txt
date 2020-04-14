@@ -1,0 +1,4 @@
+In /home/ericm/github/goapps/intro/code
+go mod init github.com/emacadie/goapps/intro/code
+go run github.com/emacadie/goapps/intro/code
+
