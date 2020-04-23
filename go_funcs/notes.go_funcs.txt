@@ -1,0 +1,7 @@
+functions are first class: so is go functional?
+
+Diff between functions and methods:
+https://www.sohamkamani.com/golang/functions-vs-methods/
+
+
+

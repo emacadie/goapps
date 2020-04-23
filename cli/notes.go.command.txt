@@ -1,0 +1,164 @@
+Go is a tool for managing Go source code.
+
+Usage:
+
+	go <command> [arguments]
+
+The commands are:
+
+	bug         start a bug report
+	build       compile packages and dependencies
+	clean       remove object files and cached files
+	doc         show documentation for package or symbol
+	env         print Go environment information
+	fix         update packages to use new APIs
+	fmt         gofmt (reformat) package sources
+	generate    generate Go files by processing source
+	get         download and install packages and dependencies
+	install     compile and install packages and dependencies
+	list        list packages or modules
+	mod         module maintenance
+	run         compile and run Go program
+	test        test packages
+	tool        run specified go tool
+	version     print Go version
+	vet         report likely mistakes in packages
+
+Use "go help <command>" for more information about a command.
+
+Additional help topics:
+
+	buildmode   build modes
+	c           calling between Go and C
+	cache       build and test caching
+	environment environment variables
+	filetype    file types
+	go.mod      the go.mod file
+	gopath      GOPATH environment variable
+	gopath-get  legacy GOPATH go get
+	goproxy     module proxy protocol
+	importpath  import path syntax
+	modules     modules, module versions, and more
+	module-get  module-aware go get
+	packages    package lists and patterns
+	testflag    testing flags
+	testfunc    testing functions
+
+Use "go help <topic>" for more information about that topic.
+
+go help test
+go help build
+Are these online?
+https://golang.org/cmd/go/  
+https://golang.org/pkg/cmd/go/internal/test/
+
+go run: will compile a package and not leave any artifacts on disk
+go build: many flags
+By default, only makes an excutable for modules/packages w/main
+go build -o will make a binary
+go build -i installs intermediate dependencies
+go install: many build options are available for install, and run as well
+go install -n: does a dry run: displays commands that will be run, but nothing happens
+go install -x: prints commands out as it runs them
+race flag can look for race/threading conditions
+Use it all the time in dev. It adds instrumentation, so do not add for prod compiles.
+Building modules and plugins is pretty involved. 
+Dynamic and static linking.
+
+Tests:
+go help test
+files must match pattern "*_test.go"
+For now, I have to go into /home/ericm/github/goapps/cli/src/somelib and run "go test" in there.
+From this dir, here is what I get:
+ericm@latitude:~/github/goapps/cli$ go test somelib
+can't load package: package somelib: cannot find package "somelib" in any of:
+	/usr/lib/go-1.12/src/somelib (from $GOROOT)
+	/home/ericm/go/src/somelib (from $GOPATH)
+
+export GOPATH=$(pwd)
+Or
+from 
+PATH=$JAVA_HOME/bin:$PATH
+export GOPATH=$(pwd):$GOPATH
+This worked:
+export GOPATH=$(pwd):$GOPATH
+ericm@latitude:~/github/goapps/cli$ go test somelib
+ok  	somelib	0.002s
+ericm@latitude:~/github/goapps/cli$ 
+go test -v -run Basic somelib/...
+-v will print out messages, including any we add
+coverage:
+go test -cover $PACKAGE_NAME
+-coverpkg will cover a comma-delimited tests of packages, even std lib
+50%, but which 50%? 
+use -coverprofile
+use "go tool cover" to view it
+-covermode count will tell you how many times code was called
+
+benchmarking:
+go test -bench $REG_EX_FOR_TESTS $PACKAGE_NAME
+-benchtime can be used to test longer for more accurate data
+-benchmem gives amount of memory used
+
+Profiling:
+-benchmem
+-blockprofile - look for blocking go-routines
+-blockprofilerate
+-mutexprofilefraction - looks for possible mutex contentions
+-memprofile - can help find memory leaks
+
+go help clean
+clean in case you want to get rid of binaries used in profiling
+
+go help fmt
+"go fmt" is a proxy for "gofmt"
+
+go help vet
+vet and fmt help your code meet go best practices
+It is feeling like Python: One way to do it.
+
+go help generate
+Powerful
+file must have:
+//go:generate ls -l
+provides access to shell command
+
+go help get
+go get -u github.com/josharian/impl
+(From the README for that project: "impl generates method stubs for implementing an interface. ")
+So you can make some function stubs with this package and go generate
+Fetches packages from internet, usually github
+No maven, clojars
+
+go version
+tells you the version of go
+
+go help env
+prints go environment variables
+Can you set them w/ go env? No
+
+go help list
+list packages
+go list .
+tells you what to add to source code to import a particular library
+
+get package dependencies of net/http package:
+go list -f {{.Deps}} net/http
+
+go help doc
+go doc net/http
+case insensitive:
+go doc net/http.request
+
+"go doc" is an alias to a binary "godoc"
+You can run it as a server: "godoc -http :8000"
+This will give you docs for standard libs, and anything on your system on your go path
+
+getting packages
+go get $PACKAGE_NAME
+To update:
+go get -u $PACKAGE_NAME
+also: -fix
+
+
+
