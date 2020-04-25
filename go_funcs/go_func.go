@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"math"
 	"strings"
@@ -164,6 +165,13 @@ func switchMathExpr(expr MathExpr) func(float64, float64) float64 {
 	}
 }
 
+// take a function made from a MathExpr, and double the result
+// so our function takes two float64s, and also a func, and we will return a float64
+// the func that we are using as an arg takes two float64s and returns a float64
+func double(f1, f2 float64, mathExpr func(float64, float64) float64) float64 {
+	return 2 * mathExpr(f1, f2)
+}
+
 func doFuncsFromFuncs() {
 	addExpr := mathExpression()
 	println("after setting mathExpression to a var, Math expression gives us: ", addExpr(2, 3))
@@ -180,15 +188,360 @@ func doFuncsFromFuncs() {
 	println("Calling addExpr2(f1, f2): ", addExpr2(f1, f2))
 	println("Calling subtractExpr(f1, f2): ", subtractExpr(f1, f2))
 	println("Calling multiplyExpr(f1, f2): ", multiplyExpr(f1, f2))
+
+	fmt.Printf(" calling double on 3, 2, addExpr2: %f \n", double(3, 2, addExpr2))
+	fmt.Printf(" calling double on 3, 2, switchMathExpr(AddExpr): %f \n", double(3, 2, switchMathExpr(AddExpr)))
+	fmt.Printf(" calling double on 3, 2, switchMathExpr(MultiplyExpr): %f \n", double(3, 2, switchMathExpr(MultiplyExpr)))
+}
+
+func powerOfTwo() func() int64 {
+	x := 1.0
+	return func() int64 {
+		x += 1
+		return int64(math.Pow(x, 2))
+	}
+}
+
+func workWithFunctionsAndState() {
+	p2 := powerOfTwo()
+	p2Result := p2() 
+	fmt.Println("here is p2Result: ", p2Result)
+	p2Result = p2() // changing value of p2Result
+	// x got incremented, so go preserves x
+	// anti-functional
+	fmt.Println("here is p2Result: ", p2Result) 
+	
+}
+
+func workWithBadStateInAnonFuncs() {
+	var funcs []func() int64 // a slice of functions
+	for i := 0; i < 10; i++ {
+		funcs = append(funcs, func() int64 {
+			return int64(math.Pow(float64(i), 2))
+		})
+	}
+	for _, f := range funcs {
+		println("calling f: ", f()) // we get 100 each time, so it uses the same i for each
+	}
+	println("--- let's try again")
+	var funcs2 []func() int64 // a slice of functions
+	for i2 := 0; i2 < 10; i2++ {
+		cleanI := i2 // give each function its own variable
+		funcs2 = append(funcs2, func() int64 {
+			return int64(math.Pow(float64(cleanI), 2))
+		})
+	}
+
+	for _, f2 := range funcs2 {
+		println("calling f2 again: ", f2()) // we get 100 each time
+	}
+}
+
+type BadReader struct {
+	err error
+}
+
+func (br BadReader) Read(p []byte) (n int, err error) {
+	return -1, br.err
+}
+
+func ReadSomethingBad() error {
+	var r io.Reader = BadReader{errors.New("my nonsense reader")}
+	if _, err := r.Read([]byte("test something")); err != nil {
+		fmt.Printf("An error occurred in ReadSomethingBad: %s\n", err)
+		return err
+	}
+	return nil
+}
+
+func doErrorHandling() {
+	ReadSomethingBad()
+}
+
+type SimpleReader struct {
+	count int
+}
+
+// need to make SimpleReder a pointer here - otherwise we are changing a copy
+func (br *SimpleReader) Read(p []byte) (n int, err error) {
+	println("br count:", br.count)
+	if br.count > 3 {
+		return 0, io.EOF
+		// return 0, errors.New("bad robot")
+	}
+	br.count += 1
+	return br.count, nil
+}
+
+func ReadSomething() error {
+	var r io.Reader = BadReader{errors.New("my nonsense reader")}
+	_, err := r.Read([]byte("test something"))
+	if err != nil {
+		fmt.Printf("An error occurred in ReadSomething: %s\n", err)
+		return err
+	}
+	return nil
+}
+
+func ReadFullFile() error {
+	// SimpleReader needs to be a reference since our method uses a pointer receiver
+	var r io.Reader = &SimpleReader{}
+	for {
+		value, err := r.Read([]byte("text that does nothing"))
+		if err == io.EOF {
+			println("finished reading file, breaking out of loop")
+			break
+		} else if err != nil {
+			return err
+		}
+		println("Here is value:", value)
+	}
+	return nil
+}
+
+func continueOnError() {
+	if err := ReadFullFile(); err == io.EOF {
+		println("successfully read file")
+	} else if err != nil {
+		println("Something bad occurred")
+	}
+}
+
+func (br *SimpleReader) Close() error {
+	println("closing reader")
+	return nil
+}
+
+func ReadFullFile02() error {
+	// SimpleReader needs to be a reference since our method uses a pointer receiver
+	var r io.ReadCloser = &SimpleReader{}
+	defer func() {
+		_ = r.Close()
+	}() // like a finally in Java
+	// first on defer stack, last one called
+	// so I guess all defer funcs get called if they are put on stack
+	// usually you only need one
+
+	defer func() {
+		println("before for loop")
+	}()
+	for {
+		value, err := r.Read([]byte("text that does nothing"))
+		if err == io.EOF {
+			println("finished reading file, breaking out of loop")
+			break
+		} else if err != nil {
+			return err
+		}
+		println("Here is value:", value)
+	}
+	defer func() {
+		println("after for loop")
+	}() // defer funcs go on a stack, it is the last one in, first one called
+	return nil
+}
+
+func useDeferFunctions() {
+	println("In useDeferFunctions")
+	// ReadFullFile02()
+	if err := ReadFullFile02(); err == io.EOF {
+		println("successfully read file")
+	} else if err != nil {
+		println("Something bad occurred")
+	}
+}
+
+type SimplePanicReader struct {
+	count int
+}
+
+func (br *SimplePanicReader) Close() error {
+
+	println("closing SimplePanicReader")
+	return nil
+}
+
+// need to make SimplePanicReader a pointer here - otherwise we are changing a copy
+func (br *SimplePanicReader) Read(p []byte) (n int, err error) {
+	println("br count:", br.count)
+	if br.count == 2 {
+		panic( "something really really bad")
+	}
+	if br.count > 3 {
+		return 0, io.EOF
+		// return 0, errors.New("bad robot")
+	}
+	br.count += 1
+	return br.count, nil
+}
+
+func ReadFullFilePanic() error {
+	// SimplePanicReader needs to be a reference since our method uses a pointer receiver
+	var r io.ReadCloser = &SimplePanicReader{}
+	defer func() {
+		_ = r.Close()
+	}() 
+
+	defer func() {
+		println("before for loop")
+	}()
+	for {
+		value, err := r.Read([]byte("text that does nothing"))
+		if err == io.EOF {
+			println("finished reading file, breaking out of loop")
+			break
+		} else if err != nil {
+			return err
+		}
+		println("Here is value:", value)
+	}
+	defer func() {
+		println("after for loop")
+	}() 
+	return nil
+}
+
+
+func usePanics() {
+	// you could use panics in switch statements
+	// list of planets in the solar system: if someone sends an invalid one, throw a panic
+
+	println("In usePanics")
+	if err := ReadFullFilePanic(); err == io.EOF {
+		println("successfully read file")
+	} else if err != nil {
+		println("Something bad occurred")
+	}
+}
+
+// here we are naming our return value
+func ReadFullFilePanicAndRecover() (err error) {
+	// SimplePanicReader needs to be a reference since our method uses a pointer receiver
+	var r io.ReadCloser = &SimplePanicReader{}
+	defer func() {
+		_ = r.Close()
+		if p := recover(); p != nil {
+			println("our panic: ", p)
+			err = errors.New("a panic occurred but it is okay")
+		}
+	}() 
+
+	defer func() {
+		println("before for loop")
+	}()
+	for {
+		value, readerErr := r.Read([]byte("text that does nothing"))
+		if readerErr == io.EOF {
+			println("finished reading file, breaking out of loop")
+			break
+		} else if readerErr != nil {
+			err = readerErr
+			return
+		}
+		println("Here is value:", value)
+	}
+	defer func() {
+		println("after for loop")
+	}() 
+	return nil
+}
+
+func panicAndRecover() {
+	println("In panicAndRecover")
+	if err := ReadFullFilePanicAndRecover(); err == io.EOF {
+		println("successfully read file")
+	} else if err != nil {
+		println("Something bad occurred: ", err)
+		fmt.Printf("our error: %s \n", err)
+	}
+	// our program finished gracefully
+}
+
+type SimplePanicRecoverPanicReader struct {
+	count int
+}
+
+func (br *SimplePanicRecoverPanicReader ) Close() error {
+
+	println("closing SimplePanicRecoverPanicReader ")
+	return nil
+}
+
+// need to make SimplePanicRecoverPanicReader  a pointer here - otherwise we are changing a copy
+func (br *SimplePanicRecoverPanicReader ) Read(p []byte) (n int, err error) {
+	println("br count:", br.count)
+	if br.count == 2 {
+		// panic(errCatastrophicReader)
+		panic(errors.New("Another error"))
+	}
+	if br.count > 3 {
+		return 0, io.EOF
+		// return 0, errors.New("bad robot")
+	}
+	br.count += 1
+	return br.count, nil
+}
+
+var errCatastrophicReader = errors.New("something catastrophic happened in the reader")
+
+// here we are naming our return value
+func ReadFullFilePanicAndRecoverAndPanic() (err error) {
+	// SimplePanicRecoverPanicReader  needs to be a reference since our method uses a pointer receiver
+	var r io.ReadCloser = &SimplePanicRecoverPanicReader {}
+	defer func() {
+		_ = r.Close()
+		if p := recover(); p == errCatastrophicReader {
+			println("our panic: ", p)
+			err = errors.New("a panic occurred but it is okay")
+		} else if p != nil {
+			panic("An unexpected error occurred and we do not want to recover")
+		}
+	}() 
+
+	defer func() {
+		println("before for loop")
+	}()
+	for {
+		value, readerErr := r.Read([]byte("text that does nothing"))
+		if readerErr == io.EOF {
+			println("finished reading file, breaking out of loop")
+			break
+		} else if readerErr != nil {
+			err = readerErr
+			return
+		}
+		println("Here is value:", value)
+	}
+	defer func() {
+		println("after for loop")
+	}() 
+	return nil
+}
+
+func panicAndRecoverAndPanic() {
+	println("In panicAndRecoverAndPanic")
+	if err := ReadFullFilePanicAndRecoverAndPanic(); err == io.EOF {
+		println("successfully read file")
+	} else if err != nil {
+		println("Something bad occurred: ", err)
+		fmt.Printf("our error: %s \n", err)
+	}
+	// our program finished gracefully
 }
 
 func main() {
-	doMathStuff()
-	doHttpStuff()
-	doSemanticVersionStuff()
-	doAnonFuncs()
-	doFuncsFromFuncs() 
-
-	
+	// doMathStuff()
+	// doHttpStuff()
+	// doSemanticVersionStuff()
+	// doAnonFuncs()
+	// doFuncsFromFuncs() 
+	// workWithFunctionsAndState() 
+	// workWithBadStateInAnonFuncs()
+	// doErrorHandling()
+	// continueOnError()
+	// useDeferFunctions()
+	// usePanics()
+	// panicAndRecover()
+	panicAndRecoverAndPanic()
 }
 
