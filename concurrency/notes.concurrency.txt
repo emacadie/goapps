@@ -25,6 +25,16 @@ goroutine has variable stack space (starting at 2K), but can grow
 threads managed by OS, goroutines managed by go runtime
 you may have 100,000 goroutines at a time
 
+Just make an anonymous function, and prefix "go"
+
+coordination:
+sync package, wait groups, mutexes
+https://golang.org/pkg/sync/
+wait groups
+mutex: mutual exclusion lock
+only one task (owner of lock) can access that code
+lock, access, unlock
+
 
 To run:
 ericm@latitude:~/github/goapps/concurrency/code$ pwd; go run concurrent
@@ -32,5 +42,37 @@ ericm@latitude:~/github/goapps/concurrency/code$ pwd; go run concurrent
 # concurrent
 ./main.go:13:3: id declared and not used
 
+to run and look for race conditions:
+go run --race concurrent
+or if we are in the dir:
+go run --race .
+
+WARNING: DATA RACE
+Write at 0x00c000088180 by goroutine 7:
+  runtime.mapassign_fast64()
+      /usr/lib/go-1.12/src/runtime/map_fast64.go:92 +0x0
+  main.queryDatabase()
+      /home/ericm/github/goapps/concurrency/code/main.go:52 +0x1ad
+  main.main.func2()
+      /home/ericm/github/goapps/concurrency/code/main.go:28 +0x6b
+
+Previous read at 0x00c000088180 by goroutine 6:
+  runtime.mapaccess2_fast64()
+      /usr/lib/go-1.12/src/runtime/map_fast64.go:52 +0x0
+  main.main.func1()
+      /home/ericm/github/goapps/concurrency/code/main.go:44 +0x97
+
+Goroutine 7 (running) created at:
+  main.main()
+      /home/ericm/github/goapps/concurrency/code/main.go:27 +0x1bc
+
+Goroutine 6 (finished) created at:
+  main.main()
+      /home/ericm/github/goapps/concurrency/code/main.go:19 +0x18b
+So I need to look at lines 52 and 44 I think
+
+So we are locking. I wonder what Venkat S things of Go.
+
+Doesn't having one mutex take away the multithreading gains? Or should I say parallelism?
 
 
