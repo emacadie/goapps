@@ -1,0 +1,27 @@
+Concurrency in go
+
+They did not talk too much about immutability
+
+concurrency vs parallelism
+
+single task
+concurency: having multiple tasks
+parallelism: execute multiple tasks simyltaneously
+
+shopping:
+single task: you need to buy one item
+concurency: you need to buy multiple items (order may be random)
+parallelism: multiple people shopping for multiple items at the same time (perhaps each has part of the list)
+
+https://talks.golang.org/2012/waza.slide#8
+https://talks.golang.org/2012/waza.slide#38
+Running something in bacground
+Parallelism requires concurrency
+
+ericm@latitude:~/github/goapps/concurrency/code$ pwd; go run concurrent
+/home/ericm/github/goapps/concurrency/code
+# concurrent
+./main.go:13:3: id declared and not used
+
+
+

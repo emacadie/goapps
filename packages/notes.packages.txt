@@ -1,0 +1,147 @@
+Package: all Go source files in a single directory, but not subsirectories.
+A package could be over multiple files.
+A package can have var and const blocks, types, structs, interfaces, functions
+
+Types:
+1. Library package. Name must match directory name
+Should have related features.
+2. Main package. Defines application entry points. Contains a main function; this is where app starts.
+They can be in any directory. Directory name does not need to be "main".
+Main is used to setup and initialization, not "business logic".
+
+Packages can import other packages
+
+A package can have a doc.go, which is all documentation for package
+Compiler will skip it
+init functions: You can have multiple init functions
+A package can be over multiple files
+https://github.com/golang/go/blob/master/src/crypto/tls/generate_cert.go
+That is package main, even though it is in crypto/tls package.
+A package can have multiple mains
+
+package names should be short, clear, lower case, no underscores, prefer nouns (what is works on, not what it does), be careful with abbreviations, don't use common names
+
+utilities: what kind of utilities?
+data_layer: too long, has underscore
+dl: what is that?
+time: clear and concise
+json: acronym, but you know what JSON is
+
+avoid stutter
+http.HTTPServer and json.JSONEncoder
+You will always use package name, so use http.Server and json.Encoder
+
+time.NewTime and db.ConnectToDatabase are not good.
+time.New or time.Time and db.Connect are better
+
+Lifecycle of package:
+1. import required package
+2. Set variables to initial values
+3. Call init() function (there may be more than one)
+
+A package can have as many init() functions as you want. It is the only function that can be defined multiple times.
+We cannot control the order the init() functions are called
+The init in main will be called after the others, since main packages pulls into other packages
+So every package goes through same lifecycle
+You cannot explicitly call an init() function
+
+Visibility:
+Public: available everywhere, starts with capital letter
+Package: Only available in package (all files in package), starts with lower case letter
+
+Internal package: public stuff available to parent package and all its descendents, but not globally
+package stuff only available in the internal package
+
+Documenting package:
+godoc will use comments at top of package, multiple lines with "//" commenting, not "/* etc */" 
+Maybe you can use /* */, but it looks like go repo uses a lot of //
+You can also put them in doc.go
+see https://github.com/golang/go/blob/master/src/fmt/doc.go
+
+Document the public members:
+use complete sentences
+Start first sentence with definite article or element's name.
+First sentence should be a short description.
+Package comment is at top of file, before the package declaration
+go doc can get comments at package level, or at member level
+
+how to design a package:
+provide a clear solution - single responsibility, cohesive API
+focus on consumer - simple use, minimize API, such as accept a config object instead of a lot of functions, encapsulate changes (like interfaces)
+maximize reusability - reduce dependencies, minimize scope
+
+interface:
+input to funcs
+you can receive concrete types, usually for configuration
+or receive interfaces when dealing with behavior
+output:
+concrete types are better (config and behavior)
+can output errors - try to avoid panics
+Consumer will know if they need to continue
+
+examples:
+input
+concrete types: net/http.Request
+interfaces: net/http.Handler
+
+output
+concrete type: net/http.Response
+errors: net/http.Get
+
+
+Importing packages:
+import "fmt"
+or in an import block
+import (
+    "fmt"
+    "log"
+    "net/http"
+)
+And to use any funcs:
+fmt.Println()
+use the last part of the import path
+fmt.Println()
+log.Fatal(err)
+http.ListenAndServe
+
+What is we have multiple packages ending with same string?
+encoding/json
+another/package/json
+
+We can do this:
+import (
+    "encoding/json"
+    apjson "another/package/json"
+)
+So the other package would use "apjson" prefix
+
+import for side effect
+import (
+    "database/sql"
+    _ "github.com/lib/pq"
+)
+This will call the init functions
+This will put in the "right-only variable"
+common for databases
+initializes drivers: many times the init for a db calls sql.Register (a standard go library function)
+
+Internal packages: helps with better organization without leaking details
+you do this by making a directory in a package called "internal"
+All children of the parent dir will be able to access to internal package
+
+relative imports: import a package relative to current one
+Not valid in workspaces or modules.
+They allow for rapid local prototyping
+You will probably never need this.
+
+vendor directories:
+older way, you may still encounter it
+workspaces only (what is diff between module and workspace?)
+hierarchically resolved
+You can do this if you want a specific version, project will use this
+Make a "vendor" directory and copy package there
+As more groups move to modules, you will see this less and less
+
+
+
+
