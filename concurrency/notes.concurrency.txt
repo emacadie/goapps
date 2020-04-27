@@ -74,5 +74,78 @@ So I need to look at lines 52 and 44 I think
 So we are locking. I wonder what Venkat S things of Go.
 
 Doesn't having one mutex take away the multithreading gains? Or should I say parallelism?
+There are read/write mutexes, or RW mutexes
+
+Writing and reading something at same time is bad, but multiple reads should be okay
+Read does not mutate, just, you know, read
+For RWMutex: write with Lock and Unlock. That will block other writers and all readers.
+Read with RLock and RUnlock. That will allow multiple readers.
+They are a more complicated than regular mutex, so they are a bit slower
+If there is a balance between reading and writing, regular mutex should be okay
+
+Channels also coordinate goroutines
+Rob Pike: Do not communicate by sharing memory, share memory by communicating.
+
+Mutexes protect a section of memory so only operator can change it. 
+Channels copy memory and send it, so one side has a sender that will send message into channel, another goroutine receives the copy
+Ways of handling concurrency:
+Coordinating tasks: wait groups and channels
+Sharing memory: mutexes and channels
+
+Says you can use a function called "make" to make maps and slices. Look it up.
+To make an unbuffered channel
+ch := make(chan int)
+This channel will send and recieve intgers
+"chan" is a keyword. Then you give the type.
+A buffered channel:
+ch := make(chan int, 5)
+This can store 5 messages without receivers ready to receive
+
+channels are blocking constructs
+why use goroutines and channels? You cannot send if you have no receiver
+Buffered channels give capacity in case you do not have a matching sender and receiver
+Usually unbuffered is sufficient
+
+channel types:
+Bidirectional
+ch := make(chan int)
+func someFunc(ch chan int) // passing bi-directional
+Send-only
+func someFunc(ch chan<- int) // send-only
+receive only
+func someFunc(ch <-chan int) // receive-only
+
+I think they should have done ->chan and chan->
+
+Closing:
+there is a close function
+you cannot check if a channel is closed
+You will get a panic if you try to use a closed channel to send
+That seems like a design flaw
+only senders can close channel
+No need to worry about if a channel is closed if you receive
+You might get a 0 for int channel, or an empty data structure
+But you won't panic
+
+Channels and control flow: if, for loops, and select (unique to channels)
+You can do this to check if channel is closed when receiving:
+msg, ok := <-chArg
+An int channel will give 0 if it is closed, but maybe you are getting 0 from an open channel
+
+select statement:
+ch1 := make(chan int)
+ch2 := make(chan string)
+select {
+case i := <- ch1:
+// stuff
+case ch2 <- "hello":
+// stuff
+}
+There is no predetermined order if multiple cases can be executed
+It will block until something happens.
+It is a blocking select statemet
+Adding a default case makes it a non-blocking select
+
+We can update our demo. We get both cache and database hits, double hits.
 
 
