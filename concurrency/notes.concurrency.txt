@@ -18,6 +18,15 @@ https://talks.golang.org/2012/waza.slide#38
 Running something in bacground
 Parallelism requires concurrency
 
+threads vs goroutines
+both have own execution stack
+threads have fixed stack space (about 1 MB)
+goroutine has variable stack space (starting at 2K), but can grow
+threads managed by OS, goroutines managed by go runtime
+you may have 100,000 goroutines at a time
+
+
+To run:
 ericm@latitude:~/github/goapps/concurrency/code$ pwd; go run concurrent
 /home/ericm/github/goapps/concurrency/code
 # concurrent
