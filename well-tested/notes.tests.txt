@@ -1,0 +1,121 @@
+Go documentation:
+https://golang.org/pkg/testing/
+
+3 types out of the box:
+1. regular assertion tests (actually they use "if", not any assertion library)
+unit, integration, end-to-en
+2. benchmark tests
+performance
+3. And "example tests"
+used for documentation
+We will not do much with this
+
+ran 
+go mod init gotesting
+in dir /home/ericm/github/goapps/well-tested/code
+
+run 
+go test
+In same dir
+
+test files must end with _test (go will exclude these from the binary for production builds)
+test funcs must start with Test
+test funcs accept one parameter: *testing.T
+
+test package is same as the prod, white box test
+_test package is a black box test
+
+Other packages:
+testing/quick
+https://golang.org/pkg/testing/quick/
+For "black box" testing (like other people's code?)
+testing/iotest
+https://golang.org/pkg/testing/iotest/
+Testing readers and writers for I/O
+net/http/httptest
+https://golang.org/pkg/
+Testing web services/network stuff
+
+Community projects:
+https://github.com/stretchr/testify
+
+https://github.com/onsi/ginkgo
+
+https://github.com/smartystreets/goconvey
+
+https://github.com/gavv/httpexpect
+
+https://github.com/golang/mock
+
+https://github.com/DATA-DOG/go-sqlmock
+
+If you are writing integration tests or end-to-end tests, you might want to put your _test file in another dir
+
+Write test using normal Go code
+
+Report errors using methods on *testing.T object
+
+Immediate failure: will cause test to exit
+Non-immediate failure: test will continue, say if you have multiple assertions
+
+Immediate failure: will cause test to exit
+t.FailNow()
+t.Fatal()
+t.Fatalf()
+Non-immediate failure: test will continue, say if you have multiple assertions
+t.Fail()
+t.Error()
+t.Errorf()
+
+To run tests:
+go test
+go test $PKG_1 $PKG_2
+to run tests in current dir and all subdirs
+go test ./...
+for verbose output 
+go test -v 
+specific test:
+go test -run {regexp}
+To get test coverage:
+go test -cover
+What if only 50% is covered?
+How do you know which 50%?
+go test -coverprofile cover.out
+You can do this in HTML:
+go test cover -html cover.out
+To find out how many times a statement was run:
+go test -coverprofile count.out -covermode count
+
+table-driven tests
+
+Other funcs in testing to know:
+Log, Logf, Helper 
+Skip, Skipf, SkipNow (You may want to skip some tests while developing)
+Run: Tests can run tests
+Parallel: run more than one at a time
+
+benchmarking and profiling
+benchmark tests do not use "Test" prefix, but "Benchmark"
+Now we send in (b *testing.B)
+
+Running benchmark tests:
+go test -bench
+You can control how long it will take
+go test -bench -benchtime 10s
+
+profiling tests:
+go test -benchmem
+go test -trace trace.out
+go test -{type}profile {file}
+types for profile:
+block 
+cover
+cpu
+mem
+mutex
+
+
+
+
+
+
