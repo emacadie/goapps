@@ -11,11 +11,19 @@ Files we make:
 showmestuff.go
 dosomething.go
 dinnertotal.go
-
+flagtest.go
+scandemo.go
+bufiodemo.go
+filemaker.go
 
 https://golang.org/pkg/fmt/
 fmt:
 Println adds a return at the end
 Print does not
+
+This guy jumps around, reuses blows away what's in his file and does something different, pastes text without warning.
+I don't like this guy at all.
+
+Now to module 3
 
 
