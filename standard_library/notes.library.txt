@@ -1,0 +1,21 @@
+why use standard library?
+prewritten and tested
+it will be tested since it's part of Go
+will probably not be abandoned
+
+
+
+https://golang.org/pkg/
+
+Files we make:
+showmestuff.go
+dosomething.go
+dinnertotal.go
+
+
+https://golang.org/pkg/fmt/
+fmt:
+Println adds a return at the end
+Print does not
+
+

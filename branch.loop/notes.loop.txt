@@ -1,0 +1,12 @@
+For statement:
+simple iteration/traversal
+Run until a condition met
+To skip/continue
+Infinite loop
+
+Linked list:
+each record has the value and pointer to next
+Until last pointer is nil
+
+
+
