@@ -16,6 +16,13 @@ scandemo.go
 bufiodemo.go
 filemaker.go
 
+scandemo2.go
+sscanfdemo.go
+scanlndemo.go
+printdemo.go
+printfdemo.go
+
+
 https://golang.org/pkg/fmt/
 fmt:
 Println adds a return at the end
@@ -25,5 +32,24 @@ This guy jumps around, reuses blows away what's in his file and does something d
 I don't like this guy at all.
 
 Now to module 3
+fmt package
+formats input and output
+
+Sscanf: handles input, like printf handles output
+scanln: scans a line
+
+printf format specifiers
+%v - default
+%s - string
+%d - decimal integers
+%g - floating point
+%b - base 2 numbers
+%o - base 8 numbers
+%t - true or false
+(This guy had "base 22" and "base 88". I am starting to lose confidence. Maybe they shouldn't let .NET people talk about Go.)
+And he is blowing away the contents of a file AGAIN.
+Sprintf can be used to put formatted output into a variable (such as for a file or web app)
+
+
 
 
