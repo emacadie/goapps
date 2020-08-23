@@ -103,7 +103,35 @@ these are for developers
 do not put in release artifacts
 useful for testing
 
+log.Println( "This is our message" )
+gives:
+2020/08/23 14:13:31 This is our message
+Can we change the date format?
+
+why log things?
+if something goes wrong, you will want to know why
+spot bugs in code
+discover config issues
+investigate performance problems (need timestamps)
+log unusual events, error levels, config settings, telemetry information
+
+what not to log:
+PII, credential info, financial info (account numbers, transaction amounts), IP addresses
+
+use error levels to your advantage, being as verbose or concise as you like
+
+To read trace.out file:
+go tool trace trace.out 
+Which gives this:
+2020/08/23 16:25:16 Parsing trace...
+2020/08/23 16:25:16 Splitting trace...
+2020/08/23 16:25:16 Opening browser. Trace viewer is listening on http://127.0.0.1:46391
+Then you can look at it in the browser.
+
+You generally do not do these too often in production
+
 files:
 outfirstlog.go
-
+secondlog.go
+tracethis.go
 

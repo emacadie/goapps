@@ -1,9 +1,0 @@
-total 28
--rw-r--r-- 1 ericm ericm  581 Aug 13 23:38 showmestuff.go
--rw-r--r-- 1 ericm ericm  143 Aug 13 23:54 dosomething.go
--rw-r--r-- 1 ericm ericm 1055 Aug 16 21:04 dinnertotal.go
--rw-r--r-- 1 ericm ericm  987 Aug 16 23:11 flagtest.go
--rw-r--r-- 1 ericm ericm  469 Aug 16 23:28 scandemo.go
--rw-r--r-- 1 ericm ericm  329 Aug 16 23:28 notes.library.txt
--rw-r--r-- 1 ericm ericm  660 Aug 17 00:32 bufiodemo.go
--rw-r--r-- 1 ericm ericm    0 Aug 17 00:32 test.txt
