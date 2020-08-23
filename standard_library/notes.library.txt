@@ -8,6 +8,7 @@ will probably not be abandoned
 https://golang.org/pkg/
 
 Files we make:
+in cli:
 showmestuff.go
 dosomething.go
 dinnertotal.go
@@ -16,11 +17,18 @@ scandemo.go
 bufiodemo.go
 filemaker.go
 
+in fmt:
 scandemo2.go
 sscanfdemo.go
 scanlndemo.go
 printdemo.go
 printfdemo.go
+errormessages.go
+printstuff.go
+
+in log:
+
+It is interesting that all the functions in standard library start with capital letters, and are usually NOT verbs.
 
 
 https://golang.org/pkg/fmt/
@@ -50,6 +58,52 @@ printf format specifiers
 And he is blowing away the contents of a file AGAIN.
 Sprintf can be used to put formatted output into a variable (such as for a file or web app)
 
+logging error levels:
+Why don't log frameworks use names AND numbers? Then there is no doubt about the order
+Information - something to know
+Warning - more serious
+Error - something really bad
+Fatal - you need to stop
+Log4J also has debug
 
+info:
+when to use: 
+if you want to confirm something, 
+logging transactions
+keeping track of something (finite resources)
+show runtime info (OS, memory)
+when not to use:
+serious condition
+something misconfigured
+anything that compromises operation
+
+warning:
+when to use:
+you need user's attention
+something misconfigured
+when not to use:
+operation is compromised (failure to connect to DB)
+something that could cause program to fail
+
+error:
+when to use:
+operation is compromised (open a file, connect to DB)
+something unexpected happened
+when not to use:
+program must be shut down
+
+fatal:
+when to use:
+when program must exit
+when not to use:
+program can keep going
+
+debug messages:
+these are for developers
+do not put in release artifacts
+useful for testing
+
+files:
+outfirstlog.go
 
 
