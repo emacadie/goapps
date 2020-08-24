@@ -130,8 +130,47 @@ Then you can look at it in the browser.
 
 You generally do not do these too often in production
 
+I think I need some executables on my system to look at these
+
 files:
 outfirstlog.go
 secondlog.go
 tracethis.go
+
+time package
+We will may-shure time
+
+wall clock, monotonic time
+wall clock: time of day provided by OS
+Subject to variation (leap years, time zones), can be set by NTP
+great for humans
+not great for measuring time
+monotonic time: like a stop watch, used to may-shure time
+not subject to variation
+only meaningful for process calling it
+
+stop saying "may-shure"
+You could measure something with wall clock
+But what if there is an NTP update while measuring?
+
+time.Now() gives both:
+Here is the time:  2020-08-23 18:21:34.371775268 -0500 CDT m=+0.000060168
+time.Now() returns a struct:
+time.Year()
+time.Month()
+time.Day()
+
+You can make your own format, but according to https://golang.org/pkg/time/ you must use 
+"Mon Jan 2 15:04:05 MST 2006" as your base.
+I am not clear why.
+And yes, if you change one of the values you will get the incorrect date.
+
+
+showtime.go
+time.go
+
+When I tried to create "time.go" with c-x c-f or find-file or switch-to-buffer
+the completion kept picking showtime.go (since that matches filter "time.go")
+find-alternate-file did the trick
+Then I had to re-open "showtime.go"
 
