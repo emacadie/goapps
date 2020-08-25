@@ -165,9 +165,10 @@ You can make your own format, but according to https://golang.org/pkg/time/ you 
 I am not clear why.
 And yes, if you change one of the values you will get the incorrect date.
 
-
+files:
 showtime.go
 time.go
+simpleapp.go
 
 When I tried to create "time.go" with c-x c-f or find-file or switch-to-buffer
 the completion kept picking showtime.go (since that matches filter "time.go")
