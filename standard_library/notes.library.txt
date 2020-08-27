@@ -175,3 +175,13 @@ the completion kept picking showtime.go (since that matches filter "time.go")
 find-alternate-file did the trick
 Then I had to re-open "showtime.go"
 
+strings:
+strings are read-only slices of bytes
+When you change a string, Go makes a new string (so they are immutable)
+
+files:
+strings.go
+compare.go
+
+
+
