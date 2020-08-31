@@ -179,9 +179,12 @@ strings:
 strings are read-only slices of bytes
 When you change a string, Go makes a new string (so they are immutable)
 
+Try listing the libraries you import in alphabetical order
+
 files:
 strings.go
 compare.go
+split.go
 
 
 
