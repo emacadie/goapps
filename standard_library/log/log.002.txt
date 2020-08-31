@@ -1,4 +1,0 @@
-INFO: 2020/08/31 01:43:50 secondlog.go:30: This is info
-WARNING: 2020/08/31 01:43:50 secondlog.go:31: I'm warning you
-ERROR: 2020/08/31 01:43:50 secondlog.go:32: Error message
-FATAL: 2020/08/31 01:43:50 secondlog.go:33: It's over
