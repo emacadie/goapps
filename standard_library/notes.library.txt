@@ -185,6 +185,8 @@ files:
 strings.go
 compare.go
 split.go
-
+find.go
+logparser.go
+findreplace.go
 
 
