@@ -179,7 +179,13 @@ strings:
 strings are read-only slices of bytes
 When you change a string, Go makes a new string (so they are immutable)
 
-Try listing the libraries you import in alphabetical order
+Try listing the libraries you import in alphabetical order, mm-kay
+
+Looking at regex
+Use backtick for regex strings so you don't have to escape the escape
+regexp.Compile( `s(\w[a-z]+)g\b` )
+But tell Pete you can still Face the Face
+regex may be faster than using the strings library
 
 files:
 strings.go
@@ -188,5 +194,8 @@ split.go
 find.go
 logparser.go
 findreplace.go
+regex.go
+trim.go
+casing.go
 
 
