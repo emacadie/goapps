@@ -212,11 +212,17 @@ customtype.go
 src/media/media.go
 To use that module when you run, do this:
 export GOPATH=$(pwd):$GOPATH
+showtypes.go
+typedemo.go
+primitive.go
+
 
 In customtype.go, we reassign the values of the struct.
 It actually made a new struct with new values. If we have large structs, this could be a problem.
 w/getters and setters: We can validate data before storing it, which we cannot do if we just modify the properties.
 
+References a series of articles on medium:
+https://medium.com/@jon_43067
 
 
 
