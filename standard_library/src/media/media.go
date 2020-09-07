@@ -11,7 +11,7 @@ type Catalogable interface {
 	GetRating() string
 	GetBoxOffice() float32
 	SetTitle( newTitle string )
-	SetRating( newRating string )
+	SetRating( newRating Rating )
 	SetBoxOffice( newBoxOffice float32 )
 }
 
@@ -49,8 +49,8 @@ func NewMovie(argTitle string, rating Rating, boxOffice float32) Movie {
 func ( m *Movie ) GetTitle() string {
 	return strings.Title( m.title )
 }
-func ( m *Movie ) GetRating() Rating {
-	return m.rating
+func ( m *Movie ) GetRating() string {
+	return string( m.rating )
 }
 func ( m *Movie ) GetBoxOffice() float32 {
 	return m.boxOffice
