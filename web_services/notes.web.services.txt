@@ -1,0 +1,76 @@
+Web services in Go.
+
+Web services: APIs to communicate.
+Separate layers of your application.
+We will use REST
+Client/Server
+Requests over HTTP
+Uniform resource identifiers (URI) or endpoint.
+Request methods:
+CONNECT
+DELETE
+GET
+HEAD
+OPTIONS
+PATCH
+POST
+PUT
+TRACE
+
+Using JSON:
+Has strings, numbers, booleans, null/empty
+Sometimes XML can also be used.
+
+Every response has a status code.
+200: success
+300: redirection
+400: Client error (like requesting non-exising resource, or badly formed request, or lack of permissions)
+500: Server error
+
+Requests are stateless. Service does not have to remember who sent request.
+Allows scalability.
+
+Env:
+Go, emacs
+Postman
+MySQL (yuck!) I might use postgres
+The web app is Angular, which relies on Node. Yuck.
+And it looks like it's in:
+02/demos/02/demos/inventory-mgmt/inventory-mgmt/inventory-mgmt
+Seriously?
+apt installed about 200 packages.
+
+in the root of that project:
+npm install -g @angular/cli
+I had to do that as root.
+I really do not want to learn javascript, or node, or angular. Just Go.
+Then run "npm install"
+to run app: "ng serve --open"
+And now my system is freezing up for a second a LOT.
+It finally opens on http://localhost:4200/home
+I need a new machine. I need a new life.
+
+Handling HTTP requests:
+net/http.Handle function
+Registers a handler
+net/http.HandleFunc
+Registers a function that also handles.
+foo := func( a http.ResponseWriter, _ *http.Response ) {
+    w.Write( []byte( "Hello world ) )
+}
+http.HandleFunc( "/foo", foo )
+so you can assign a function to a variable and pass it to a function.
+So is Go kind of sort of functional?
+
+To listen to request: make a ServeMux (HTTP Request Multiplexor)
+Matches URLs to patterns in registered handlers
+net/http.ListenAndServe
+there is also net/http.ListedAndServeTLS for security
+
+So make a new module:
+go mod init shelfunit.info/golang/inventoryservice
+
+http://localhost:5000/foo
+
+
+
