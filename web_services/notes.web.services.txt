@@ -1,5 +1,7 @@
 Web services in Go.
 
+inventory-mgmt app from Pluralsight tutorial.
+
 Web services: APIs to communicate.
 Separate layers of your application.
 We will use REST
@@ -49,6 +51,8 @@ to run app: "ng serve --open"
 And now my system is freezing up for a second a LOT.
 It finally opens on http://localhost:4200/home
 I need a new machine. I need a new life.
+in /home/ericm/github/goapps/web_services/inventory-mgmt: "ng serve --open"
+
 
 Handling HTTP requests:
 net/http.Handle function
@@ -71,6 +75,10 @@ So make a new module:
 go mod init shelfunit.info/golang/inventoryservice
 
 http://localhost:5000/foo
+
+JSON:
+Look at the encoding/json package
+Marshal and Unmarshal functions
 
 
 
