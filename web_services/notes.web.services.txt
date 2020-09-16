@@ -80,5 +80,15 @@ JSON:
 Look at the encoding/json package
 Marshal and Unmarshal functions
 
+HTTP Requests:
+Has a method which is a string
+A header, which is a map of strings to a slice of strings
+Body: type of io.ReadCloser
+I have no idea what that is right now.
+
+One handler can handle different methods.
+It has to because the servemux just goes by routes.
+"if err != nill" is really getting old.
+
 
 
