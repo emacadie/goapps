@@ -109,32 +109,32 @@ func main() {
 	// no need for a break statement
 	r := HTTPRequest{Method: "GET"}
 	switch r.Method {
-	case "GET":
-		println("Get request")
-	case "PUT":
-		println("Put request")
-	}
+		case "GET":
+			println("Get request")
+		case "PUT":
+			println("Put request")
+		}
 	// you can use "fallthrough" to go to next case
 	switch r.Method {
-	case "GET":
-		println("Get request w/fallthrough")
-		fallthrough
-	case "POST":
-		println("Post request after fallthrough")
-	case "PUT":
-		println("Put request")
-	}
+		case "GET":
+			println("Get request w/fallthrough")
+			fallthrough
+		case "POST":
+			println("Post request after fallthrough")
+		case "PUT":
+			println("Put request")
+	    }
 	// default
 	r2 := HTTPRequest{Method: "NONE"}
 	switch r2.Method {
-	case "GET":
-		println("Get request ")
-	case "POST":
-		println("Post request")
-	case "PUT":
-		println("Put request")
-	default:
-		println("Default")
-	}
+		case "GET":
+			println("Get request ")
+		case "POST":
+			println("Post request")
+		case "PUT":
+			println("Put request")
+		default:
+			println("Default")
+		}
 }
 
