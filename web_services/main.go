@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Product struct {
@@ -175,6 +176,15 @@ func barHandler( w http.ResponseWriter , r *http.Request ) {
 	w.Write( []byte ( "bar called" ) )	
 }
 
+func middlewareHandler( handler http.Handler ) http.Handler {
+	return http.HandlerFunc( func( w http.ResponseWriter, r *http.Request )  {
+		fmt.Println( "Before handler; middleware starting" )
+		start := time.Now()
+		handler.ServeHTTP( w, r )
+		fmt.Printf( "Middleware finished: %s \n", time.Since( start ) )
+	})
+}
+
 func main() {
 	fmt.Println( "test" )
 	// register foo handler
@@ -182,8 +192,11 @@ func main() {
 	// register bar handler
 	http.HandleFunc( "/bar", barHandler )
 
-	http.HandleFunc( "/products", productsHandler )
-	http.HandleFunc( "/products/", productHandler )
+	productListHandler := http.HandlerFunc( productsHandler  )
+	productItemHandler := http.HandlerFunc( productHandler  )
+
+	http.Handle( "/products", middlewareHandler( productListHandler ) )
+	http.Handle( "/products/", middlewareHandler( productItemHandler ) )
 	// call servmux
 	http.ListenAndServe( ":5000", nil )
 }

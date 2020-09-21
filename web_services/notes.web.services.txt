@@ -107,3 +107,29 @@ type URL struct {
 }
 We will look at Path
 
+
+Middleware:
+Authentication, Logging, Session management
+Functionality before or after our handlers
+Wrap handler in an adapter function
+http.HandlerFunc allows us to execute code before or after handler
+func midddlewareHandler( handler http.Handler ) http.Handler {
+     return http.HandlerFunc( func( w http.ResponseWriter, r *http.Request ) {
+     // do stuff before intended handler
+     handler.ServeHttp( w, r )
+     // do stuff after intended handler
+} )
+  func intendedFunction( w http.ResponseWriter, r *http.Request ) {
+  // business logic here
+  }
+}
+
+func main() {
+     intendedHandler := http.HandlerFunc( intendedFunction )
+     http.Handle( "/foo", middlewareHandler( intendedHandler ) )
+     http.ListenAndServe( ":5000", nil )
+}
+
+
+
+
