@@ -6,7 +6,7 @@ concurrency vs parallelism
 
 single task
 concurency: having multiple tasks
-parallelism: execute multiple tasks simyltaneously
+parallelism: execute multiple tasks simultaneously
 
 shopping:
 single task: you need to buy one item

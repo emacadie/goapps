@@ -130,6 +130,13 @@ func main() {
      http.ListenAndServe( ":5000", nil )
 }
 
+CORS: Cross-Origin Resource Sharing
 
+Where does the "make" function come from for maps?
+It looks like it's in https://golang.org/pkg/builtin/#make
+I guess those are like java.lang: No need to qualify
+
+
+up to 6:22 in demo
 
 
