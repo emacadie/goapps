@@ -65,7 +65,7 @@ func getProductList() []Product {
 	for _, value := range productMap.m {
 		products = append(products, value)
 	}
-	productMap.Unlock() // why not defer? is that only needed if there is a possible error?
+	productMap.RUnlock() // why not defer? is that only needed if there is a possible error?
 	return products
 }
 
