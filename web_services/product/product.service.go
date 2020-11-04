@@ -11,26 +11,6 @@ import (
 	"strings"
 )
 
-/*
-func getNextID() int {
-	highestID := 1
-	for _, product := range productList {
-		if highestID < product.ProductID {
-			highestID = product.ProductID
-		}
-	}
-	return highestID + 1
-}
-
-func findProductByID( productID int ) ( *Product, int ) {
-	for i, product := range productList {
-		if product.ProductID == productID {
-			return &product, i
-		}
-	}
-	return nil, 0
-}
-*/
 const productsBasePath = "products"
 
 func SetupRoutes(apiBasePath string) {
@@ -125,34 +105,7 @@ func productsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.WriteHeader(http.StatusCreated)
-		/*
-			case http.MethodPost:
-				// add a new product to the list
-				var newProduct Product
-				bodyBytes, err := ioutil.ReadAll( r.Body )
-				if err != nil {
-					w.WriteHeader( http.StatusBadRequest )
-					return
-				}
-				err = json.Unmarshal( bodyBytes, &newProduct )
-				if err != nil {
-					w.WriteHeader( http.StatusBadRequest )
-					return
-				}
-				if newProduct.ProductID != 0 {
-					w.WriteHeader( http.StatusBadRequest )
-					return
-				}
-			_, err := addOrUpdateProduct( newProduct )
-			if err != nil {
-				w.WriteHeader( http.StatusBadRequest )
-				return
-			}
-				// newProduct.ProductID = getNextID()
-				// productList = append( productList, newProduct )
-				w.WriteHeader( http.StatusCreated )
-				return
-		*/
+		
 	case http.MethodOptions:
 		return
 	default:

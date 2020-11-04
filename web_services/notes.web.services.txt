@@ -137,6 +137,8 @@ It looks like it's in https://golang.org/pkg/builtin/#make
 I guess those are like java.lang: No need to qualify
 
 
-up to 6:22 in demo
+starting module 4, persistence
+They are using MySQL, I will use Postgres.
+
 
 
