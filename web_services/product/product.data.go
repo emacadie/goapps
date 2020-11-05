@@ -8,6 +8,8 @@ import (
 	"os"
 	"sort"
 	"sync"
+
+	"shelfunit.info/golang/inventoryservice/database"
 )
 
 var productMap = struct {
@@ -59,7 +61,29 @@ func removeProduct(productID int) {
 	delete(productMap.m, productID)
 }
 
-func getProductList() []Product {
+func getProductList() ([]Product, error) {
+
+	results, err := database.DbConn.Query( `select productId, manufacturer, sku, upc, pricePerUnit, quantityOnHand, productName from products` )
+	if err != nil {
+		return nil, err
+	}
+	defer results.Close()
+	products := make([]Product, 0)
+	for results.Next() {
+		var product Product
+		fmt.Println( "Got a product" )
+		results.Scan(&product.ProductID, 
+			&product.Manufacturer, 
+			&product.Sku, 
+			&product.Upc, 
+			&product.PricePerUnit, 
+			&product.QuantityOnHand, 
+			&product.ProductName)
+		products = append( products, product )
+	}
+	return products, nil
+
+	/*
 	productMap.RLock()
 	products := make([]Product, 0, len(productMap.m))
 	for _, value := range productMap.m {
@@ -67,6 +91,7 @@ func getProductList() []Product {
 	}
 	productMap.RUnlock() // why not defer? is that only needed if there is a possible error?
 	return products
+	*/
 }
 
 func getProductIds() []int {

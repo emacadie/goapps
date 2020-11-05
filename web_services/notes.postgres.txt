@@ -1,0 +1,29 @@
+create user go_web_usr with password 'this-is-twitter';
+create database inventorydb with owner go_web_usr;
+grant all privileges on database inventorydb to go_web_usr;
+
+psql --port=5433 -h localhost -U go_web_usr -d inventorydb
+
+To install driver:
+go get github.com/jackc/pgx/v4
+that had errors, so I also did 
+go get github.com/lib/pq
+
+When I tried to run with pgx, I got this:
+ericm@latitude:~/github/goapps/web_services$ go run main.go
+# github.com/jackc/pgtype
+../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/aclitem_array.go:90:49: reflectedValue.IsZero undefined (type reflect.Value has no field or method IsZero)
+../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/bool_array.go:92:49: reflectedValue.IsZero undefined (type reflect.Value has no field or method IsZero)
+../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/bpchar_array.go:92:49: reflectedValue.IsZero undefined (type reflect.Value has no field or method IsZero)
+../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/bytea_array.go:73:49: reflectedValue.IsZero undefined (type reflect.Value has no field or method IsZero)
+../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/cidr_array.go:112:49: reflectedValue.IsZero undefined (type reflect.Value has no field or method IsZero)
+../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/date_array.go:93:49: reflectedValue.IsZero undefined (type reflect.Value has no field or method IsZero)
+../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/enum_array.go:90:49: reflectedValue.IsZero undefined (type reflect.Value has no field or method IsZero)
+../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/float4_array.go:92:49: reflectedValue.IsZero undefined (type reflect.Value has no field or method IsZero)
+../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/float8_array.go:92:49: reflectedValue.IsZero undefined (type reflect.Value has no field or method IsZero)
+../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/hstore_array.go:73:49: reflectedValue.IsZero undefined (type reflect.Value has no field or method IsZero)
+../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/hstore_array.go:73:49: too many errors
+ericm@latitude:~/github/goapps/web_services$ go run main.go
+
+
+

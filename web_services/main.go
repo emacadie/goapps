@@ -2,9 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"shelfunit.info/golang/inventoryservice/database"
 	"shelfunit.info/golang/inventoryservice/product"
 	"time"
+	// note the underscore
+	// _"github.com/jackc/pgx/v4" // v4.9.2 // indirect
+	_"github.com/lib/pq" // v1.8.0 // indirect
 )
 
 type fooHandler struct {
@@ -31,6 +36,9 @@ func middlewareHandler( handler http.Handler ) http.Handler {
 const apiBasePath = "/api"
 
 func main() {
+	database.SetupDatabase()
+
+	log.Println( "Got the db" )
 	fmt.Println( "test" )
 	// register foo handler
 	http.Handle( "/foo", &fooHandler{ Message: "Foo called" } )
