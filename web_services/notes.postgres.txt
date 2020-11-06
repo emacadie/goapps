@@ -25,5 +25,6 @@ ericm@latitude:~/github/goapps/web_services$ go run main.go
 ../../../go/pkg/mod/github.com/jackc/pgtype@v1.6.1/hstore_array.go:73:49: too many errors
 ericm@latitude:~/github/goapps/web_services$ go run main.go
 
+For Postgres, do not use ?, use $1, $2, etc
 
 
