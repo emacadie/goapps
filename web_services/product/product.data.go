@@ -75,14 +75,6 @@ func getProduct(productID int) (*Product, error) {
 	}
 	return product, nil
 
-	/*
-	productMap.RLock()
-	defer productMap.RUnlock()
-	if product, ok := productMap.m[productID]; ok {
-		return &product
-	}
-	return nil
-	*/
 } // getProduct
 
 func removeProduct(productID int) error {
@@ -95,11 +87,6 @@ func removeProduct(productID int) error {
 		return err
 	}
 	return nil
-	/*
-	productMap.Lock()
-	defer productMap.Unlock()
-	delete(productMap.m, productID)
-	*/
 }
 
 func getProductList() ([]Product, error) {
@@ -126,15 +113,6 @@ func getProductList() ([]Product, error) {
 	}
 	return products, nil
 
-	/*
-	productMap.RLock()
-	products := make([]Product, 0, len(productMap.m))
-	for _, value := range productMap.m {
-		products = append(products, value)
-	}
-	productMap.RUnlock() // why not defer? is that only needed if there is a possible error?
-	return products
-	*/
 } // getProductList
 
 func getProductIds() []int {
@@ -153,47 +131,11 @@ func getNextProductID() int {
 	return productIDs[len(productIDs)-1] + 1
 }
 
-/*
-func addOrUpdateProduct(product Product) (int, error) {
-	var funcName = fileNameData + "addOrUpdateProduct: "
-	log.Println( funcName )
-	// if the product id is set, replace it, otherwise return error
-	addOrUpdateID := -1
-	if product.ProductID > 0 {
-		oldProduct, err := getProduct(product.ProductID)
-		if err != nil {
-			return addOrUpdateID, err
-		}
-		// if it exists, replace it. otherwise return error
-		if oldProduct == nil {
-			return 0, fmt.Errorf("product di [%d] does not exist", product.ProductID)
-		}
-		addOrUpdateID = product.ProductID
-	} else {
-		addOrUpdateID = getNextProductID()
-		product.ProductID = addOrUpdateID
-	}
-	productMap.Lock()
-	productMap.m[addOrUpdateID] = product
-	productMap.Unlock()
-	return addOrUpdateID, nil
-} // addOrUpdateProduct
-*/
 func insertProduct( product Product ) ( int, error ) {
 	var funcName = fileNameData + "insertProduct: "
 	log.Println( funcName )
 	// using QueryRow instead of Exec since the driver I was using does not implement LastInsertId
-/*
-	result, err := database.DbConn.Exec(  
-		`insert into products (manufacturer, sku, upc, pricePerUnit, quantityOnHand, productName)
-        values ( $1, $2, $3, $4, $5, $6 ) returning productid`,
-		product.Manufacturer,
-		product.Sku,
-		product.Upc,
-		product.PricePerUnit,
-		product.QuantityOnHand,
-		product.ProductName	)
-*/
+
 	newProductID := 0
 		err := database.DbConn.QueryRow(  
 		`insert into products (manufacturer, sku, upc, pricePerUnit, quantityOnHand, productName)
