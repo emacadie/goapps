@@ -27,4 +27,6 @@ ericm@latitude:~/github/goapps/web_services$ go run main.go
 
 For Postgres, do not use ?, use $1, $2, etc
 
+select * from products where productid = 2;
+
 

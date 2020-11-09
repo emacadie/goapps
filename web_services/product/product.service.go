@@ -3,7 +3,7 @@ package product
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	// "io/ioutil"
 	"log"
 	"net/http"
 	"shelfunit.info/golang/inventoryservice/cors"
@@ -58,7 +58,8 @@ func productHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		j, err2 := json.Marshal( product )
 		if err2 != nil {
-			log.Print( err )
+			log.Print( err2 )
+			log.Println( " " )
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -70,6 +71,25 @@ func productHandler(w http.ResponseWriter, r *http.Request) {
 		// w.Write(productJSON)
 	case http.MethodPut:
 		log.Println( funcName + "In http.MethodPut" )
+		var product Product
+		err :=  json.NewDecoder(r.Body).Decode(&product)
+		if err != nil {
+			log.Printf( "%s Error: %s\n", funcName, err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if product.ProductID != productID {
+			log.Printf( "%s product.ProductID %d is not equal to productID %d \n", funcName, product.ProductID, productID )
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		err = updateProduct(product)
+		if err != nil {
+			log.Printf( "%s Error: %s\n", funcName, err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		/*
 		// update a product
 		var updatedProduct Product
 		bodyBytes, err := ioutil.ReadAll(r.Body)
@@ -91,7 +111,7 @@ func productHandler(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusOK)
 		return
-
+        */
 	case http.MethodOptions:
 		return
 
@@ -129,7 +149,9 @@ func productsHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		_, err = addOrUpdateProduct(product)
+		var productID = 0
+		productID, err = insertProduct(product)
+		log.Printf( "%s inserted product %d \n", funcName, productID )
 		if err != nil {
 			log.Print(err)
 			w.WriteHeader(http.StatusBadRequest)

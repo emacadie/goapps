@@ -85,12 +85,21 @@ func getProduct(productID int) (*Product, error) {
 	*/
 } // getProduct
 
-func removeProduct(productID int) {
+func removeProduct(productID int) error {
 	var funcName = fileNameData + "removeProduct: "
 	log.Printf( "In %s with productID: %d \n", funcName, productID )
+	_, err := database.DbConn.Query( `delete from products where productid = $1`, productID )
+	if err != nil {
+		log.Print( funcName, "Got an err: ", err )
+		log.Println( " " )
+		return err
+	}
+	return nil
+	/*
 	productMap.Lock()
 	defer productMap.Unlock()
 	delete(productMap.m, productID)
+	*/
 }
 
 func getProductList() ([]Product, error) {
@@ -144,6 +153,7 @@ func getNextProductID() int {
 	return productIDs[len(productIDs)-1] + 1
 }
 
+/*
 func addOrUpdateProduct(product Product) (int, error) {
 	var funcName = fileNameData + "addOrUpdateProduct: "
 	log.Println( funcName )
@@ -168,4 +178,69 @@ func addOrUpdateProduct(product Product) (int, error) {
 	productMap.Unlock()
 	return addOrUpdateID, nil
 } // addOrUpdateProduct
+*/
+func insertProduct( product Product ) ( int, error ) {
+	var funcName = fileNameData + "insertProduct: "
+	log.Println( funcName )
+	// using QueryRow instead of Exec since the driver I was using does not implement LastInsertId
+/*
+	result, err := database.DbConn.Exec(  
+		`insert into products (manufacturer, sku, upc, pricePerUnit, quantityOnHand, productName)
+        values ( $1, $2, $3, $4, $5, $6 ) returning productid`,
+		product.Manufacturer,
+		product.Sku,
+		product.Upc,
+		product.PricePerUnit,
+		product.QuantityOnHand,
+		product.ProductName	)
+*/
+	newProductID := 0
+		err := database.DbConn.QueryRow(  
+		`insert into products (manufacturer, sku, upc, pricePerUnit, quantityOnHand, productName)
+        values ( $1, $2, $3, $4, $5, $6 ) returning productid`,
+		product.Manufacturer,
+		product.Sku,
+		product.Upc,
+		product.PricePerUnit,
+		product.QuantityOnHand,
+		product.ProductName	).Scan(&newProductID)
+
+	if err != nil {
+		log.Print( funcName, "Got an err: ", err )
+		log.Println( " " )
+		return 0, err
+	}
+
+	log.Printf( "%s: Adding id %d \n", funcName, newProductID )
+	return int( newProductID ), nil
+} // insertProduct
+
+
+func updateProduct( product Product ) error {
+	var funcName = "In " + fileNameData + "updateProduct: "
+	log.Printf( "%s with product id %d \n", funcName, product.ProductID  )
+	_, err := database.DbConn.Exec(
+		`update products set manufacturer = $1,
+         sku = $2,
+         upc = $3,
+         pricePerUnit = CAST ( $4 AS numeric( 13, 2 ) ),
+         quantityOnHand = $5,
+         productName = $6
+         where productid = $7`,
+		product.Manufacturer,
+		product.Sku,
+		product.Upc,
+		product.PricePerUnit,
+		product.QuantityOnHand,
+		product.ProductName,
+		product.ProductID)
+	if err != nil {
+		log.Print( funcName, "Got an err: ", err )
+		log.Println( " " )
+		return err
+	}
+	return nil
+	
+} // updateProduct
+
 

@@ -15,7 +15,7 @@ parallelism: multiple people shopping for multiple items at the same time (perha
 
 https://talks.golang.org/2012/waza.slide#8
 https://talks.golang.org/2012/waza.slide#38
-Running something in bacground
+Running something in background
 Parallelism requires concurrency
 
 threads vs goroutines
@@ -31,6 +31,7 @@ coordination:
 sync package, wait groups, mutexes
 https://golang.org/pkg/sync/
 wait groups
+These wait for goroutines to finish
 mutex: mutual exclusion lock
 only one task (owner of lock) can access that code
 lock, access, unlock
