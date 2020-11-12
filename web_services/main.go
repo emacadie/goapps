@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"shelfunit.info/golang/inventoryservice/database"
 	"shelfunit.info/golang/inventoryservice/product"
+	"shelfunit.info/golang/inventoryservice/receipt"
 	"time"
 	// note the underscore
 	// _"github.com/jackc/pgx/v4" // v4.9.2 // indirect
@@ -46,6 +47,7 @@ func main() {
 	http.HandleFunc( "/bar", barHandler )
 
 	product.SetupRoutes( apiBasePath )
+	receipt.SetupRoutes( apiBasePath )
 
 	http.ListenAndServe( ":5000", nil )
 }

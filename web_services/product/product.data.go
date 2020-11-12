@@ -1,15 +1,17 @@
 package product
 
 import (
-	"encoding/json"
+	"context"
+	// "encoding/json"
 	"fmt"
-	"io/ioutil"
+	// "io/ioutil"
 	"log"
-	"os"
+	// "os"
 	"sort"
 	"database/sql"
 	"strconv"
 	"sync"
+	"time"
 
 	"shelfunit.info/golang/inventoryservice/database"
 )
@@ -22,6 +24,9 @@ var productMap = struct {
 }{m: make(map[int]Product)}
 
 func init() {
+	var funcName = fileNameData + "init: "
+	log.Println( funcName + "starting product.data.go" )
+	/*
 	fmt.Println("loading products..")
 	prodMap, err := loadProductMap()
 	productMap.m = prodMap
@@ -29,8 +34,9 @@ func init() {
 		log.Fatal(err)
 	}
 	fmt.Printf("%d products loaded \n", len(productMap.m))
-}
-
+	*/
+} // init
+/*
 func loadProductMap() (map[int]Product, error) {
 	fileName2 := "products.json"
 	_, err := os.Stat(fileName2)
@@ -49,12 +55,16 @@ func loadProductMap() (map[int]Product, error) {
 	}
 	return prodMap, nil
 }
+*/
 
 func getProduct(productID int) (*Product, error) {
 	var funcName = fileNameData + "getProduct: "
 	log.Printf( funcName + " with product ID %d \n", productID )
 
-	row := database.DbConn.QueryRow( 
+	ctx, cancel := context.WithTimeout(context.Background(), ( 15 * time.Second ))
+	defer cancel()
+	row := database.DbConn.QueryRowContext(
+		ctx,
 		`select productId, manufacturer, sku, upc, pricePerUnit, quantityOnHand, productName 
          from products where productId = $1`, productID )
 	product := &Product{}
@@ -80,7 +90,9 @@ func getProduct(productID int) (*Product, error) {
 func removeProduct(productID int) error {
 	var funcName = fileNameData + "removeProduct: "
 	log.Printf( "In %s with productID: %d \n", funcName, productID )
-	_, err := database.DbConn.Query( `delete from products where productid = $1`, productID )
+	ctx, cancel := context.WithTimeout(context.Background(), ( 15 * time.Second ))
+	defer cancel()
+	_, err := database.DbConn.QueryContext(ctx,  `delete from products where productid = $1`, productID )
 	if err != nil {
 		log.Print( funcName, "Got an err: ", err )
 		log.Println( " " )
@@ -92,7 +104,10 @@ func removeProduct(productID int) error {
 func getProductList() ([]Product, error) {
 	var funcName = fileNameData + "getProductList: "
 	log.Println( funcName )
-	results, err := database.DbConn.Query( `select productId, manufacturer, sku, upc, pricePerUnit, quantityOnHand, productName from products` )
+	ctx, cancel := context.WithTimeout(context.Background(), ( 15 * time.Second ))
+	defer cancel()
+	results, err := database.DbConn.QueryContext(ctx,
+		`select productId, manufacturer, sku, upc, pricePerUnit, quantityOnHand, productName from products` )
 	if err != nil {
 		return nil, err
 	}
@@ -134,10 +149,12 @@ func getNextProductID() int {
 func insertProduct( product Product ) ( int, error ) {
 	var funcName = fileNameData + "insertProduct: "
 	log.Println( funcName )
-	// using QueryRow instead of Exec since the driver I was using does not implement LastInsertId
 
+	ctx, cancel := context.WithTimeout(context.Background(), ( 15 * time.Second ))
+	defer cancel()
+	// using QueryRow instead of Exec since the driver I was using does not implement LastInsertId
 	newProductID := 0
-		err := database.DbConn.QueryRow(  
+		err := database.DbConn.QueryRowContext( ctx,  
 		`insert into products (manufacturer, sku, upc, pricePerUnit, quantityOnHand, productName)
         values ( $1, $2, $3, $4, $5, $6 ) returning productid`,
 		product.Manufacturer,
@@ -161,7 +178,9 @@ func insertProduct( product Product ) ( int, error ) {
 func updateProduct( product Product ) error {
 	var funcName = "In " + fileNameData + "updateProduct: "
 	log.Printf( "%s with product id %d \n", funcName, product.ProductID  )
-	_, err := database.DbConn.Exec(
+	ctx, cancel := context.WithTimeout(context.Background(), ( 15 * time.Second ))
+	defer cancel()
+	_, err := database.DbConn.ExecContext( ctx,
 		`update products set manufacturer = $1,
          sku = $2,
          upc = $3,

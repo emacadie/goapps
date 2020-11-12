@@ -142,5 +142,8 @@ They are using MySQL, I will use Postgres.
 
 Try postman soon
 
+In the part about web connections. Can't we make a context for products.data.go once, and re-use it?
+
+Look up string tags again
 
 
