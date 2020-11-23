@@ -176,7 +176,7 @@ func insertProduct( product Product ) ( int, error ) {
 
 
 func updateProduct( product Product ) error {
-	var funcName = "In " + fileNameData + "updateProduct: "
+	var funcName = fileNameData + "updateProduct: "
 	log.Printf( "%s with product id %d \n", funcName, product.ProductID  )
 	ctx, cancel := context.WithTimeout(context.Background(), ( 15 * time.Second ))
 	defer cancel()
@@ -203,5 +203,32 @@ func updateProduct( product Product ) error {
 	return nil
 	
 } // updateProduct
+
+func GetTopTenProducts() ( []Product, error ) {
+	var funcName = fileNameData + "GetTopTenProducts: "
+	ctx, cancel := context.WithTimeout( context.Background(), 3 * time.Second )
+	defer cancel()
+	results, err := database.DbConn.QueryContext(ctx, 
+		`select productId, manufacturer, sku, upc, pricePerUnit, quantityOnHand, productName
+        from Products order by quantityOnHand desc limit 10`)
+	if err != nil {
+		log.Println( funcName + "error getting top 10 products from DB: " + err.Error() )
+		return nil, err
+	}
+	defer results.Close()
+	products := make( []Product, 0 )
+	for results.Next() {
+		var product Product
+		results.Scan(&product.ProductID, 
+			&product.Manufacturer, 
+			&product.Sku, 
+			&product.Upc, 
+			&product.PricePerUnit, 
+			&product.QuantityOnHand, 
+			&product.ProductName)
+		products = append( products, product )
+	} // for results.Next()
+	return products, nil
+} // GetTopTenProducts
 
 

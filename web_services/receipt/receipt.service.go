@@ -66,44 +66,43 @@ func handleReceipts( w http.ResponseWriter, r *http.Request ) {
 func handleDownload(w http.ResponseWriter, r *http.Request) {
 	var funcName = fileNameService + "handleDownload: "
 	log.Println( funcName + "starting function" )
-	urlPathSegments := strings.Split(r.URL.Path, fmt.Sprintf("%s/", receiptPath))
-	if len(urlPathSegments[1:]) > 1 {
-		w.WriteHeader(http.StatusBadRequest)
+	urlPathSegments := strings.Split( r.URL.Path, fmt.Sprintf( "%s/", receiptPath ) )
+	if len( urlPathSegments[ 1: ] ) > 1 {
+		w.WriteHeader( http.StatusBadRequest )
 		return
 	}
-	fileName := urlPathSegments[1:][0]
-	file, err := os.Open(filepath.Join(ReceiptDirectory, fileName))
+	fileName := urlPathSegments[ 1: ][ 0 ]
+	file, err := os.Open( filepath.Join( ReceiptDirectory, fileName ) )
 	defer file.Close()
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader( http.StatusNotFound )
 		return
 	}
-	fHeader := make([]byte, 512)
-	file.Read(fHeader)
-	fContentType := http.DetectContentType(fHeader)
+	fHeader := make( []byte, 512 )
+	file.Read( fHeader )
+	fContentType := http.DetectContentType( fHeader )
 
 	stat, err := file.Stat()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader( http.StatusInternalServerError )
 		return
 	}
-	fSize := strconv.FormatInt(stat.Size(), 10)
-	w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
-	w.Header().Set("Content-Type", fContentType)
-	w.Header().Set("Content-Length", fSize)
-	file.Seek(0, 0)
-	io.Copy(w, file)
-
-}
+	fSize := strconv.FormatInt( stat.Size(), 10 )
+	w.Header().Set( "Content-Disposition", "attachment; filename=" + fileName )
+	w.Header().Set( "Content-Type", fContentType )
+	w.Header().Set( "Content-Length", fSize )
+	file.Seek( 0, 0 )
+	io.Copy( w, file )
+} // handleDownload
 
 // SetupRoutes
-func SetupRoutes(apiBasePath string) {
+func SetupRoutes( apiBasePath string ) {
 	var funcName = fileNameService + "SetupRoutes: "
 	log.Println( funcName + "starting route setup" )
 	receiptHandler  := http.HandlerFunc( handleReceipts )
 	downloadHandler := http.HandlerFunc( handleDownload )
-	http.Handle(fmt.Sprintf("%s/%s",  apiBasePath, receiptPath), cors.Middleware(receiptHandler))
-	http.Handle(fmt.Sprintf("%s/%s/", apiBasePath, receiptPath), cors.Middleware(downloadHandler))
+	http.Handle( fmt.Sprintf( "%s/%s",  apiBasePath, receiptPath ), cors.Middleware( receiptHandler ) )
+	http.Handle( fmt.Sprintf( "%s/%s/", apiBasePath, receiptPath ), cors.Middleware( downloadHandler ) )
 	log.Printf( "%s done w/route setup w/ base path %s and receipt path %s \n", funcName, apiBasePath, receiptPath )
 }
 

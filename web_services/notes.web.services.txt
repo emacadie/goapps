@@ -42,6 +42,7 @@ And it looks like it's in:
 Seriously?
 apt installed about 200 packages.
 
+RUNNING ANGULAR APP:
 in the root of that project:
 npm install -g @angular/cli
 I had to do that as root.
@@ -146,4 +147,9 @@ In the part about web connections. Can't we make a context for products.data.go 
 
 Look up string tags again
 
+At end of module 5:
+writing javascript to test web socket:
+in console:
+let ws = new WebSocket( "ws://localhost:5000/websocket" )
+ws.send(JSON.stringify({data:"test message from browser", type: "test"}))
 
