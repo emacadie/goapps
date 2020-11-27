@@ -2,6 +2,7 @@ Web services in Go.
 
 We can run this with: go run main.go
 We can run the Angular app with: in root of Angular app: ng serve --open
+Runs at http://localhost:4200/home
 
 inventory-mgmt app from Pluralsight tutorial.
 
