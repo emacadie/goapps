@@ -19,11 +19,14 @@ const fileNameService = "product.service"
 func SetupRoutes(apiBasePath string) {
 	handleProducts := http.HandlerFunc(productsHandler)
 	handleProduct  := http.HandlerFunc(productHandler)
+	reportHandler  := http.HandlerFunc( handleProductReport )
 	// "products" handles group
 	// "products/" handles one
 	http.Handle( fmt.Sprintf("%s/%s", apiBasePath, productsBasePath ), cors.Middleware( handleProducts ) )
 	http.Handle( fmt.Sprintf("%s/%s/", apiBasePath, productsBasePath ), cors.Middleware( handleProduct ) )
+	http.Handle( fmt.Sprintf("%s/%s/reports", apiBasePath, productsBasePath ), cors.Middleware( reportHandler ) )
 	http.Handle( "/websocket", websocket.Handler( productSocket ) )
+	
 }
 
 func productHandler(w http.ResponseWriter, r *http.Request) {

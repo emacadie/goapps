@@ -1,5 +1,8 @@
 Web services in Go.
 
+We can run this with: go run main.go
+We can run the Angular app with: in root of Angular app: ng serve --open
+
 inventory-mgmt app from Pluralsight tutorial.
 
 Web services: APIs to communicate.
@@ -152,4 +155,10 @@ writing javascript to test web socket:
 in console:
 let ws = new WebSocket( "ws://localhost:5000/websocket" )
 ws.send(JSON.stringify({data:"test message from browser", type: "test"}))
+
+Templates: Now we are dealing with pipelines
+They sound like UNIX pipelines
+Ken Thompson strikes again.
+
+Up to 3:34
 

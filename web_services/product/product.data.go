@@ -10,6 +10,7 @@ import (
 	"sort"
 	"database/sql"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -26,36 +27,7 @@ var productMap = struct {
 func init() {
 	var funcName = fileNameData + "init: "
 	log.Println( funcName + "starting product.data.go" )
-	/*
-	fmt.Println("loading products..")
-	prodMap, err := loadProductMap()
-	productMap.m = prodMap
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%d products loaded \n", len(productMap.m))
-	*/
 } // init
-/*
-func loadProductMap() (map[int]Product, error) {
-	fileName2 := "products.json"
-	_, err := os.Stat(fileName2)
-	if os.IsNotExist(err) {
-		return nil, fmt.Errorf("file[%s] does not exist", fileName2)
-	}
-	file, _ := ioutil.ReadFile(fileName2)
-	productList := make([]Product, 0)
-	err = json.Unmarshal([]byte(file), &productList)
-	if err != nil {
-		log.Fatal(err)
-	}
-	prodMap := make(map[int]Product)
-	for i := 0; i < len(productList); i++ {
-		prodMap[productList[i].ProductID] = productList[i]
-	}
-	return prodMap, nil
-}
-*/
 
 func getProduct(productID int) (*Product, error) {
 	var funcName = fileNameData + "getProduct: "
@@ -231,4 +203,65 @@ func GetTopTenProducts() ( []Product, error ) {
 	return products, nil
 } // GetTopTenProducts
 
+func searchForProductData( productFilter ProductReportFilter ) ( []Product, error ) {
+	var funcName = fileNameData + "searchForProductData: "
+	ctx, cancel := context.WithTimeout( context.Background(), 3 * time.Second )
+	defer cancel()
+	
+	var queryArgs = make([]interface{}, 0 )
+	var queryBuilder strings.Builder
+/*
+	    queryBuilder.WriteString(`SELECT
+        productId,
+        LOWER(manufacturer),
+        LOWER(sku),
+        upc,
+        pricePerUnit,
+        quantityOnHand,
+        LOWER(productName)    
+        FROM products WHERE `)
+*/
+
+	queryBuilder.WriteString(
+		`select productId, LOWER( manufacturer ), LOWER( sku ), upc, pricePerUnit, quantityOnHand, LOWER( productName ) 
+        FROM products where `)
+
+	if productFilter.NameFilter != "" {
+		queryBuilder.WriteString( `productName like ? ` )
+		queryArgs = append( queryArgs, "%" + strings.ToLower( productFilter.NameFilter) + "%" )
+	}
+	if productFilter.ManufacturerFilter != "" {
+		if len( queryArgs ) > 0 {
+			queryBuilder.WriteString( " and " )
+		}
+		queryBuilder.WriteString( `manufacturer like ?` )
+		queryArgs = append( queryArgs, "%" + strings.ToLower( productFilter.ManufacturerFilter) + "%" )
+	}
+	if productFilter.SKUFilter != "" {
+		if len( queryArgs ) > 0 {
+			queryBuilder.WriteString( " and " )
+		}
+		queryBuilder.WriteString( `sku like ?` )
+		queryArgs = append( queryArgs, "%" + strings.ToLower( productFilter.SKUFilter) + "%" )
+	}
+	results, err := database.DbConn.QueryContext( ctx, queryBuilder.String(), queryArgs... )
+	if err != nil {
+		log.Println( funcName + "Error in query: " + err.Error() )
+		return nil, err
+	}
+	defer results.Close()
+	products := make( []Product, 0 )
+	for results.Next() {
+		var product Product
+		results.Scan(&product.ProductID, 
+			&product.Manufacturer, 
+			&product.Sku, 
+			&product.Upc, 
+			&product.PricePerUnit, 
+			&product.QuantityOnHand, 
+			&product.ProductName)
+		products = append( products, product )
+	} // for results.Next()
+	return products, nil
+} // searchForProductData
 

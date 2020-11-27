@@ -9,8 +9,8 @@ import (
 	"shelfunit.info/golang/inventoryservice/receipt"
 	"time"
 	// note the underscore
-	// _"github.com/jackc/pgx/v4" // v4.9.2 // indirect
-	_"github.com/lib/pq" // v1.8.0 // indirect
+	_"github.com/jackc/pgx/v4" // v4.9.2 // indirect
+	// _"github.com/lib/pq" // v1.8.0 // indirect this one likes $1
 )
 
 type fooHandler struct {
