@@ -218,6 +218,7 @@ func GetTopTenProducts() ( []Product, error ) {
 
 func searchForProductData( productFilter ProductReportFilter ) ( []Product, error ) {
 	var funcName = fileNameData + "searchForProductData: "
+	log.Println( funcName + "starting func" )
 	ctx, cancel := context.WithTimeout( context.Background(), 3 * time.Second )
 	defer cancel()
 	var argNum int = 1
@@ -225,7 +226,8 @@ func searchForProductData( productFilter ProductReportFilter ) ( []Product, erro
 	var queryBuilder strings.Builder
 
 	queryBuilder.WriteString(
-		`select productId, LOWER( manufacturer ), LOWER( sku ), upc, pricePerUnit, quantityOnHand, LOWER( productName ) 
+		`select productId, LOWER( manufacturer ) as "manufacturer", LOWER( sku ) as "sku", upc, 
+        to_char(pricePerUnit, '999D9') as "pricePerUnit", quantityOnHand, LOWER( productName ) as "productName" 
         FROM products where `)
 
 	if productFilter.NameFilter != "" {
@@ -251,6 +253,7 @@ func searchForProductData( productFilter ProductReportFilter ) ( []Product, erro
 		queryBuilder.WriteString( strconv.Itoa(argNum) )
 		queryArgs = append( queryArgs, "%" + strings.ToLower( productFilter.SKUFilter) + "%" )
 	}
+	log.Println( funcName + "about to call query: " + queryBuilder.String() )
 	results, err := database.DbConn.Query( ctx, queryBuilder.String(), queryArgs... )
 	if err != nil {
 		log.Println( funcName + "Error in query: " + err.Error() )
@@ -258,17 +261,26 @@ func searchForProductData( productFilter ProductReportFilter ) ( []Product, erro
 	}
 	defer results.Close()
 	products := make( []Product, 0 )
+
 	for results.Next() {
 		var product Product
-		results.Scan(&product.ProductID, 
+		log.Println( funcName + "Got a product" )
+		err = results.Scan(&product.ProductID, 
 			&product.Manufacturer, 
 			&product.Sku, 
 			&product.Upc, 
 			&product.PricePerUnit, 
 			&product.QuantityOnHand, 
 			&product.ProductName)
+		if err != nil {
+			log.Print(funcName, "Got an error: ", err)
+			log.Println( " " )
+			log.Println( funcName + "Error was with product id " + strconv.Itoa( product.ProductID ) )
+		}
 		products = append( products, product )
+		fmt.Println( "Appended a product to product list: ", strconv.Itoa( product.ProductID ) )
 	} // for results.Next()
+	log.Printf( "%s number of items in products: %d \n", funcName, len(products) )
 	return products, nil
 } // searchForProductData
 

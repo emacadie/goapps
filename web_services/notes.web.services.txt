@@ -167,3 +167,24 @@ godoc for pgx:
 https://pkg.go.dev/github.com/jackc/pgx
 https://godoc.org/github.com/jackc/pgx
 
+Template functions https://golang.org/pkg/text/template/#hdr-Functions
+and {{if and true true}} {{end}}
+or {{if or true false}} {{end}}
+index {{index . 1}}
+len {{len .}}
+not {{if not false}}
+print printf println
+
+operators:
+eq ==
+ne !=
+lt <
+le <=
+gt >
+ge >=
+
+Template.Funcs
+Funcs must return a single value, or (a single value or error)
+
+
+

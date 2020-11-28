@@ -19,6 +19,7 @@ type ProductReportFilter struct {
 
 func handleProductReport( w http.ResponseWriter, r *http.Request ) {
 	var funcName = fileNameData + "handleProductReport: "
+	log.Println( funcName + "starting func" )
 	switch r.Method {
 		case http.MethodPost:
 		var productFilter ProductReportFilter
@@ -35,7 +36,7 @@ func handleProductReport( w http.ResponseWriter, r *http.Request ) {
 			return
 		}
 		
-		t := template.New( "report.gotmpl" )
+		t := template.New( "report.gotmpl" ).Funcs(template.FuncMap{ "mod": func(i, x int) bool {return i % x == 0} })
 		t, err = t.ParseFiles( path.Join( "templates", "report.gotmpl" ) )
 		if err != nil {
 			log.Printf( "%s err: %s \n", funcName, err )
@@ -43,10 +44,9 @@ func handleProductReport( w http.ResponseWriter, r *http.Request ) {
 			return
 		}
 		var tmpl bytes.Buffer
-		var product Product
+
 		if len(products) > 0 {
-			product = products[ 0 ]
-			err = t.Execute( &tmpl, product )
+			err = t.Execute( &tmpl, products )
 		} else {
 			w.WriteHeader(http.StatusNotFound)
 			return
