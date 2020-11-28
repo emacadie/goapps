@@ -9,7 +9,7 @@ import (
 	// "os"
 	"sort"
 	"database/sql"
-	// "github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4"
 	"strconv"
 	"strings"
 	"sync"
@@ -38,7 +38,8 @@ func getProduct(productID int) (*Product, error) {
 	defer cancel()
 	row := database.DbConn.QueryRow(
 		ctx,
-		`select productId, manufacturer, sku, upc, pricePerUnit, quantityOnHand, productName 
+		`select productId, manufacturer, sku, upc, to_char(pricePerUnit, '999D9'), 
+         quantityOnHand, productName 
          from products where productId = $1`, productID )
 	product := &Product{}
 	err := row.Scan(&product.ProductID, 
@@ -48,11 +49,16 @@ func getProduct(productID int) (*Product, error) {
 			&product.PricePerUnit, 
 			&product.QuantityOnHand, 
 			&product.ProductName)
-
+	
+	// why won't this work w/pgx? Look at package later
 	if err == sql.ErrNoRows {
-		log.Println( "No rows" )
+		log.Println( "No rows (using sql.ErrNoRows)" )
+		return nil, nil
+	} else if err == pgx.ErrNoRows {
+		log.Println( "No rows (using pgx.ErrNoRows)" )
 		return nil, nil
 	} else if err != nil {
+		log.Println( funcName + " err is not nil in getProduct" )
 		log.Fatal( err )
 		return nil, err
 	}
@@ -214,41 +220,35 @@ func searchForProductData( productFilter ProductReportFilter ) ( []Product, erro
 	var funcName = fileNameData + "searchForProductData: "
 	ctx, cancel := context.WithTimeout( context.Background(), 3 * time.Second )
 	defer cancel()
-	
+	var argNum int = 1
 	var queryArgs = make([]interface{}, 0 )
 	var queryBuilder strings.Builder
-/*
-	    queryBuilder.WriteString(`SELECT
-        productId,
-        LOWER(manufacturer),
-        LOWER(sku),
-        upc,
-        pricePerUnit,
-        quantityOnHand,
-        LOWER(productName)    
-        FROM products WHERE `)
-*/
 
 	queryBuilder.WriteString(
 		`select productId, LOWER( manufacturer ), LOWER( sku ), upc, pricePerUnit, quantityOnHand, LOWER( productName ) 
         FROM products where `)
 
 	if productFilter.NameFilter != "" {
-		queryBuilder.WriteString( `productName like ? ` )
+		queryBuilder.WriteString( `productName like $` )
+		queryBuilder.WriteString( strconv.Itoa( argNum ) )
+		argNum++
 		queryArgs = append( queryArgs, "%" + strings.ToLower( productFilter.NameFilter) + "%" )
 	}
 	if productFilter.ManufacturerFilter != "" {
 		if len( queryArgs ) > 0 {
 			queryBuilder.WriteString( " and " )
 		}
-		queryBuilder.WriteString( `manufacturer like ?` )
+		queryBuilder.WriteString( `manufacturer like $` )
+		queryBuilder.WriteString( strconv.Itoa( argNum ) )
+		argNum++
 		queryArgs = append( queryArgs, "%" + strings.ToLower( productFilter.ManufacturerFilter) + "%" )
 	}
 	if productFilter.SKUFilter != "" {
 		if len( queryArgs ) > 0 {
 			queryBuilder.WriteString( " and " )
 		}
-		queryBuilder.WriteString( `sku like ?` )
+		queryBuilder.WriteString( `sku like $` )
+		queryBuilder.WriteString( strconv.Itoa(argNum) )
 		queryArgs = append( queryArgs, "%" + strings.ToLower( productFilter.SKUFilter) + "%" )
 	}
 	results, err := database.DbConn.Query( ctx, queryBuilder.String(), queryArgs... )

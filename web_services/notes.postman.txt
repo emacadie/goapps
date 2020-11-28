@@ -5,7 +5,7 @@ GET: http://localhost:5000/api/products/2
 To update a product:
 PUT: http://localhost:5000/api/products/2
 
-To insert a product:
+To insert a product (no slash at the end):
 POST http://localhost:5000/api/products
  {
         "manufacturer": "Boeing",
@@ -15,6 +15,9 @@ POST http://localhost:5000/api/products
         "quantityOnHand": 9,
         "productName": "747 Max"
     }
+
+To delete a product:
+DELETE http://localhost:5000/api/products/194
 
 This driver does not support LastInsertId
 Had to change code

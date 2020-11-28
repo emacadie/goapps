@@ -25,8 +25,7 @@ func SetupRoutes(apiBasePath string) {
 	http.Handle( fmt.Sprintf("%s/%s", apiBasePath, productsBasePath ), cors.Middleware( handleProducts ) )
 	http.Handle( fmt.Sprintf("%s/%s/", apiBasePath, productsBasePath ), cors.Middleware( handleProduct ) )
 	http.Handle( fmt.Sprintf("%s/%s/reports", apiBasePath, productsBasePath ), cors.Middleware( reportHandler ) )
-	http.Handle( "/websocket", websocket.Handler( productSocket ) )
-	
+	http.Handle( "/websocket", websocket.Handler( productSocket ) )	
 }
 
 func productHandler(w http.ResponseWriter, r *http.Request) {

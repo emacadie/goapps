@@ -163,3 +163,7 @@ Ken Thompson strikes again.
 
 Up to 3:34
 
+godoc for pgx:
+https://pkg.go.dev/github.com/jackc/pgx
+https://godoc.org/github.com/jackc/pgx
+
