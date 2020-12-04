@@ -1,0 +1,91 @@
+Object-oriented Programming in Go
+
+
+in /home/ericm/github/goapps/oo_in_go/gopherpay (just above src)
+export GOPATH=$(pwd):$GOPATH
+go run src/shelfunit.info/gopherpay/client/procedural/main.go
+go run src/shelfunit.info/gopherpay/client/objectoriented/main.go    
+go run src/shelfunit.info/gopherpay/client/main.go
+
+
+So one problem w/structs is: How to do data validation?
+Plus with the payments, we have to know if they are using cash, checks or credit.
+Procedural just have functions and data structures
+
+
+Less to do in objectoriented/main.go, client needs to remember less
+
+What is object-oriented programming?
+Compose applications of objects that interact to deliver behaviors
+An object could have some data. Methods are on the edge, exposed to other methods, hiding data.
+
++------ Methods -----+
+|                    |
+|        Data        |
+|                    |
++--------------------+
+
+Objects interact with world through methods.
+That is encapsulation: interact through methods, no idea of details
+Message passing: let object determine how to interpret message, or if it does anything at all (sounds like actors)
+Inheritance: Not really in Go (my guess is they use composition)
+Polymorphism: multiple types that can stand in for a common type (like cash, check, credit for payments)
+
+We can have oo without forcing getters and setters.
+You get a lot of boilerplate.
+
+Go is not a class and object language
+Go does not have private data
+Go does not have inheritance
+Go does not have abstract data types (but we can do interfaces)
+
+We do have methods. We can attach functions to data structures.
+We have package oriented design.
+We have type embedding
+We have interfaces (this will be big)
+
+Encapsulation:
+Accessing a service on an object without knowing how it is implemented
+Not necessarily getters and setters
+But being able to verify data in a setter is nice.
+A lot of programmers just do blind setters.
+
+Encapsulation in Go: 
+Challenges: no classes or private data
+We have interfaces and package oriented design
+
+Package oriented design:
+package payment
+type CreditAccount struct {
+     accountNumber string
+     accountOwner string
+     // availableCredit float32 // I think he forgot this one
+}
+func (c CreditAccount) AccountNumber() string
+func (c CreditAccount) AccountOwner() string
+func (c CreditAccount) AvailableCredit() float32
+
+Naming conventions: Accessor methods have same name as the field you are getting, w/method starting with capital letter
+Do not overuse this
+Another data structure in same package will be able to access CreditAccount's fields
+But other packages will not be able to get data directly, must use accessors
+Treat packages as lowest organizational unit
+
+Interfaces:
+
+package payment
+type creditAccount{} // only in package
+// even other parts in package cannot get to it
+func (c CreditAccount) AccountNumber() string
+func (c CreditAccount) AvailableCredit() float32
+
+// to make it available, make a PaymentOption
+// it will define accessor methods to get to creditAccount data\
+// interface can only expose methods, or behaviors, it cannot expose data
+type PaymentOption interface {
+     AccountNumber() string
+     AvailableCredit() float32
+}
+// but how to create it?
+
+
