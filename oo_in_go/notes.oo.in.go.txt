@@ -6,6 +6,7 @@ export GOPATH=$(pwd):$GOPATH
 go run src/shelfunit.info/gopherpay/client/procedural/main.go
 go run src/shelfunit.info/gopherpay/client/objectoriented/main.go    
 go run src/shelfunit.info/gopherpay/client/main.go
+go run src/shelfunit.info/gopherpay/client/try_channels.go 
 
 
 So one problem w/structs is: How to do data validation?
@@ -52,7 +53,7 @@ A lot of programmers just do blind setters.
 
 Encapsulation in Go: 
 Challenges: no classes or private data
-We have interfaces and package oriented design
+Strategies: We have interfaces and package oriented design
 
 Package oriented design:
 package payment
@@ -87,5 +88,64 @@ type PaymentOption interface {
      AvailableCredit() float32
 }
 // but how to create it?
+
+Message passing: Like actors?
+Message passing: sending a message to an object, but letting that object determine what to do with it
+(Can you tell an object how to handle a function?)
+It is kind of like actors.
+Sender sends message to receiver, and receiver decides
+
+Strategies for message passing: Interfaces and channels
+
+Interfaces:
+Example: 
+type PaymentOption interface {
+     ProcessPayment(float32) bool
+}
+type CashAccount struct {}
+func (c *CashAccount) ProcessPayment(amount float32) bool {
+     return true
+}
+
+type CreditAccount struct { .. }
+func (c *CreditAccount) ProcessPayment(amount float32) bool { .. }
+
+Message passing is not calling creating a CashAccount and calling ProcessPayment on it
+But:
+var paymentOption PaymentOption
+paymentOption = &CashAccount{}
+ok := paymentOption.ProcessPayment(500)
+this is message passing
+Then we can do this:
+paymentOption = &CreditAccount{ ... }
+ok = paymentOption.ProcessPayment( 500 )
+
+Channels:
+type CreditAccount struct { ... }
+// package scope
+func (c *CreditAccount) processPayment(amount float32) { ... }
+// constructor that takes a channel
+func CreateCreditAccount(chargeCh chan float32) *CreditAccount {
+     creditAccount := &CreditAccount{ ... }
+     // using same channel
+     go func(chargeCh chan float32) {
+        for amount := range chargeCh {
+            creditAccount.processPayment(amount)
+        }
+     } (chargeCh)
+     return creditAccount
+}
+// why call processPayment in the constructor?
+// consumer:
+chargeCh := make(chan float32)
+account := CreateCreditAccount(chargeCh)
+// now we charge
+chargeCh <- 500
+// so when do you process a payment for an existing account?
+// and where do you get the account number from?
+
+Composition replaces inheritance
+
+
 
 

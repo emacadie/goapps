@@ -36,7 +36,7 @@ func main() {
 	cash.ProcessPayment( 32 )
 	credit.ProcessPayment( 44 )
 
-	fmt.Printf(  "\n\n-------------------------------------------\n\n")
+	fmt.Printf( "\n\n-------------------------------------------\n\n" )
 
 	var option payment.PaymentOption
 
@@ -52,6 +52,7 @@ func main() {
 	option.ProcessPayment( 500 )
 	// what if you want to implement more than one interface?
 
+	fmt.Printf( "\n\n-------------------------------------------\n\n" )
 
 }
 
