@@ -7,6 +7,8 @@ go run src/shelfunit.info/gopherpay/client/procedural/main.go
 go run src/shelfunit.info/gopherpay/client/objectoriented/main.go    
 go run src/shelfunit.info/gopherpay/client/main.go
 go run src/shelfunit.info/gopherpay/client/try_channels.go 
+go run src/shelfunit.info/gopherpay/client/embed_this.go 
+go run src/shelfunit.info/gopherpay/client/resolve_this.go 
 
 
 So one problem w/structs is: How to do data validation?
@@ -145,6 +147,57 @@ chargeCh <- 500
 // and where do you get the account number from?
 
 Composition replaces inheritance
+Inheritance: behavior reuse strategy where a type is based on another type, so functionality is inherited.
+Bird is-an animal.
+Composition: behavior reuse strategy where a type contains objects with the desired functionality. The type delegates calls to those objects to use their behaviors.
+Car has-an engine.
+
+Inheritance:
+Account type has methods AvailableFunds() and ProcessPayment()
+CreditCard can extend Account, and have RequestCreditLimitChange()
+
+Issues w/inheritance:
+tightly couples parent and child
+hard to debug and maintain
+all or nothing: some have single-inheritance system
+There is no inheritance in Go
+
+Account type has methods AvailableFunds() and ProcessPayment()
+CreditCard can have RequestCreditLimitChange() and have an Account type embedded inside it
+It can have an AvailableFunds() method and ProcessPayment() method, and delegate to the Account inside it
+
+AKA Type embedding
+
+type Account struct { ... }
+func (a *Account) AvailableFunds() float32 { ... }
+func (a *Account) ProcessPayment(amount float32) bool { ... }
+
+type CreditAccount struct {
+     Account // notice we just have the type
+}
+
+ca := &CreditAccount{}
+funds := ca.AvailableFunds()
+
+
+Resolving conflicts:
+what if you have multiple funcs with same name? Sort of like diamond problem
+
+type CreditAccount struct { ... }
+func (c *CreditAccount) AvailableFunds() float32 { ... }
+type CheckingAccount struct { ... }
+fund (c *CheckingAccount) AvailableFunds() float32 { ... }
+type HybridAccount struct {
+     CreditAccount
+     CheckingAccount
+}
+What happens when we call HybridAccount.AvailableFunds()?
+Bad things, man. We have to implement it on HybridAccount:
+func (h *HybridAccount) AvailableFunds() float32 {
+     return h.CreditAccount.AvailableFunds() + h.CheckingAccount.AvailableFunds()
+}
+// could we just call one?
+
 
 
 
