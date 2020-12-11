@@ -9,7 +9,7 @@ go run src/shelfunit.info/gopherpay/client/main.go
 go run src/shelfunit.info/gopherpay/client/try_channels.go 
 go run src/shelfunit.info/gopherpay/client/embed_this.go 
 go run src/shelfunit.info/gopherpay/client/resolve_this.go 
-
+go run src/shelfunit.info/gopherpay/client/run_payment.go
 
 So one problem w/structs is: How to do data validation?
 Plus with the payments, we have to know if they are using cash, checks or credit.
@@ -197,8 +197,33 @@ func (h *HybridAccount) AvailableFunds() float32 {
      return h.CreditAccount.AvailableFunds() + h.CheckingAccount.AvailableFunds()
 }
 // could we just call one?
+// yes, we could
 
+Polymorphism
+ability to transparently substitute differetn types that implement common behaviors
 
+Reader interface from standard lib
+Read([byte])(int, error)
+Can read from File, TCP, WebSocket
+We can use any of these types when we need a Reader
+
+Polymorphism provided w/interfaces
+(just like encapsulation and message passing)
+interfaces abstract type
+
+use "interface" keyword
+type PaymentOption interface {
+     ProcessPayment(float32) bool
+}
+to implement interface, add that method to a custom type w/same name, arg and return types
+
+Go uses structural typing. Interfaces are implicitly implemented in Go.
+
+Note to self: package name is the name of the directory
+
+You need to put interface in consumer
+If using third-party library, copy interface definition into your consumer
+In case you stop needing to interact w/CheckingAccount and CreditAccout, but still need PaymentBrokerAccount
 
 
 
